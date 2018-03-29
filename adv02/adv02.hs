@@ -3,8 +3,28 @@ rowSum :: [Int] -> Int
 rowSum list =
     maximum list - minimum list
 
+
+rowDivider :: Int -> [Int] -> Maybe (Int, Int)
+rowDivider n [] = Nothing
+rowDivider n mlist
+    | ((max m n) `mod` (min m n)) == 0 = Just (n, m)
+    | otherwise = rowDivider n (tail mlist)
+    where m = head mlist
+
+rowDivisors :: [Int] -> (Int, Int)
+rowDivisors allNums = 
+    case rowDivider (head allNums) (tail allNums) of
+        Just p -> p
+        Nothing -> rowDivisors (tail allNums)
+
+divisorResult :: (Int, Int) -> Int
+divisorResult (a,b) = round ( fromIntegral (max a b) / fromIntegral (min a b) )
+
 checksum :: [[Int]] -> Int
 checksum grid = sum (map rowSum grid)
+
+checksum2 :: [[Int]] -> Int
+checksum2 grid = sum (map (divisorResult . rowDivisors) grid)
 
 main = do
     let nums = [[1919,	2959,	82,	    507,	3219,	239,	3494,	1440,	3107,	259,	3544,	683,	207,    562,	276,	2963],
@@ -26,3 +46,4 @@ main = do
 
  
     print $ checksum nums
+    print $ checksum2 nums
